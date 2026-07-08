@@ -27,6 +27,9 @@
     /* Performance */
     "skipLibCheck": true,
 
+    //to allow export from .ts files
+    "allowImportingTsExtensions": true,
+
     /* Environment types */
     "types": ["node"]
   },

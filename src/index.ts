@@ -4,7 +4,7 @@ import cors from "cors";
 
 const app: Express = express();
 
-const PORT: number = 8000;
+const PORT: number = process.env.PORT as unknown as number || 8000;
 
 if(!process.env.FRONTEND_URL) {
     throw new Error("Missing FRONTEND_URL");
@@ -26,7 +26,7 @@ app.get("/", (req: Request, res: Response): void => {
     });
 });
 
-if (!PORT) {
+if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
     throw new Error("PORT is not assigned in environment variables");
 }
 

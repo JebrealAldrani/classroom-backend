@@ -58,15 +58,15 @@ router.get("/", async (req, res) => {
             data: subjectsList,
             pagination: {
                 total: totalCount,
-                totalPages: Math.ceil(totalCount / totalCount),
+                totalPages: Math.ceil(totalCount / limitPerPage),
                 page: currentPage,
                 limit: limitPerPage,
             }
         })
     } catch (err) {
-        console.error(`GET Subjects error : ${err}`)
+        console.error("GET Subjects error", err);
         res.status(500).json({
-            message: `GET Subjects error : ${err}`
+            message: `Internal Server Error`
         })
     }
 });

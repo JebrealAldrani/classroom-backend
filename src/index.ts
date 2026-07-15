@@ -1,3 +1,4 @@
+import "dotenv/config"; // must be first import in ESM
 import express, { Request, Response, Express } from "express";
 import subjectsRouter from "./routes/subjects.ts";
 import cors from "cors";
@@ -26,8 +27,8 @@ app.get("/", (req: Request, res: Response): void => {
     });
 });
 
-if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
-    throw new Error("PORT is not assigned in environment variables");
+if (!PORT || PORT < 1 || PORT > 65535) {
+    throw new Error("PORT is not assigned in environment variables")
 }
 
 app.listen(PORT, (): void => {

@@ -23,6 +23,8 @@
   },
   "type": "module",
   "dependencies": {
+    "@arcjet/inspect": "^1.8.0",
+    "@arcjet/node": "^1.8.0",
     "cors": "^2.8.6",
     "express": "^5.2.1"
   },

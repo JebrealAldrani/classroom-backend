@@ -1,23 +1,28 @@
 import "dotenv/config"; // must be first import in ESM
-import express, { Request, Response, Express } from "express";
-import subjectsRouter from "./routes/subjects.ts";
+import express, {Request, Response, Express} from "express";
 import cors from "cors";
+
+import subjectsRouter from "./routes/subjects.ts";
+import securityMiddleware from "./middleware/securityMiddleware.ts";
+
 
 const app: Express = express();
 
 const PORT: number = process.env.PORT as unknown as number || 8000;
 
-if(!process.env.FRONTEND_URL) {
+if (!process.env.FRONTEND_URL) {
     throw new Error("Missing FRONTEND_URL");
 }
 
 app.use(cors({
     origin: process.env.FRONTEND_URL,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-     credentials: true
+    credentials: true
 }))
 
 app.use(express.json());
+
+app.use(securityMiddleware)
 
 app.use("/api/subjects", subjectsRouter);
 

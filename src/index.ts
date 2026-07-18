@@ -12,7 +12,7 @@ import securityMiddleware from "./middleware/securityMiddleware.js";
 
 const app = express();
 
-const PORT: number = (process.env.PORT as unknown as number) || 8000;
+const PORT: number = (process.env.PORT as unknown as number);
 
 if (!process.env.FRONTEND_URL) {
   throw new Error("Missing FRONTEND_URL");

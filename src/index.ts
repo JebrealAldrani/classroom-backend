@@ -1,3 +1,6 @@
+import AgentAPI from "apminsight";
+AgentAPI.config()
+
 import "dotenv/config"; // must be first import in ESM
 import express, { Request, Response, Express } from "express";
 import cors from "cors";

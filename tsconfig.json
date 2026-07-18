@@ -5,8 +5,8 @@
     "lib": ["ES2022"],
 
     /* Node ESM */
-    "module": "ES2022",
-    "moduleResolution": "node",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
 
     /* Project structure */
     "rootDir": "src",
@@ -28,7 +28,7 @@
     "skipLibCheck": true,
 
     //to allow export from .ts files
-    "allowImportingTsExtensions": true,
+//    "allowImportingTsExtensions": true,
 
     /* Environment types */
     "types": ["node"]

@@ -5,10 +5,10 @@ import "dotenv/config"; // must be first import in ESM
 import express, { Request, Response, Express } from "express";
 import cors from "cors";
 import { toNodeHandler } from "better-auth/node";
-import { auth } from "./lib/auth.ts";
+import { auth } from "./lib/auth.js";
 
-import subjectsRouter from "./routes/subjects.ts";
-import securityMiddleware from "./middleware/securityMiddleware.ts";
+import subjectsRouter from "./routes/subjects.js";
+import securityMiddleware from "./middleware/securityMiddleware.js";
 
 const app = express();
 

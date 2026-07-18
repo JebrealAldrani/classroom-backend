@@ -1,3 +1,6 @@
-allowBuilds:
-  '@apminsight/native-stats': true
-  esbuild: true
+packages:
+  - .
+
+onlyBuiltDependencies:
+  - '@apminsight/native-stats'
+  - esbuild

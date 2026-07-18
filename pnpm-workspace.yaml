@@ -1,3 +1,0 @@
-allowBuilds:
-  '@apminsight/native-stats': true
-  esbuild: true

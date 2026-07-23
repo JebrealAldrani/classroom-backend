@@ -41,6 +41,11 @@ app.use(express.json());
 
 app.use(securityMiddleware);
 
+app.use((req, res, next) => {
+    console.log("Origin:", req.headers.origin);
+    next();
+});
+
 app.all("/api/auth/*splat", toNodeHandler(auth));
 
 //Routes

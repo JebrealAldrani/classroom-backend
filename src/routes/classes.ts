@@ -73,6 +73,7 @@ router.get("/", async (req, res, next) => {
             })
             .from(classes)
             .leftJoin(subjects, eq(classes.subjectId, subjects.id))
+            .leftJoin(user, eq(classes.teacherId, user.id))
             .where(whereClause)
             .orderBy(desc(classes.createdAt))
             .limit(limitPerPage)

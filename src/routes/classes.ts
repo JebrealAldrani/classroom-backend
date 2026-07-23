@@ -57,7 +57,8 @@ router.get("/", async (req, res, next) => {
 
         const countResult = await db
             .select({count: sql<number>`count(*)`})
-            .from(classes).leftJoin(user, eq(classes.teacherId, user.id))
+            .from(classes)
+            .leftJoin(user, eq(classes.teacherId, user.id))
             .where(whereClause)
 
         const totalCount = countResult[0]?.count ?? 0;
@@ -65,10 +66,10 @@ router.get("/", async (req, res, next) => {
         const classesList = await db
             .select({
                 ...getTableColumns(classes),
-                department: {...getTableColumns(subjects)}
+                subject: {...getTableColumns(subjects)}
             })
             .from(classes)
-            .leftJoin(classes, eq(classes.subjectId, subjects.id))
+            .leftJoin(subjects, eq(classes.subjectId, subjects.id))
             .where(whereClause)
             .orderBy(desc(classes.createdAt))
             .limit(limitPerPage)

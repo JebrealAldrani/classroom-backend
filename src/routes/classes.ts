@@ -66,7 +66,10 @@ router.get("/", async (req, res, next) => {
         const classesList = await db
             .select({
                 ...getTableColumns(classes),
-                subject: {...getTableColumns(subjects)}
+                subject: {...getTableColumns(subjects)},
+                user: {
+                    ...getTableColumns(user)
+                }
             })
             .from(classes)
             .leftJoin(subjects, eq(classes.subjectId, subjects.id))

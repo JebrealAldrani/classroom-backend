@@ -35,16 +35,16 @@ const originOptions = {
     credentials: true
 }
 
+app.use((req, res, next) => {
+    console.log("Origin:", req.headers.origin);
+    next();
+});
+
 app.use(cors(originOptions));
 
 app.use(express.json());
 
 app.use(securityMiddleware);
-
-app.use((req, res, next) => {
-    console.log("Origin:", req.headers.origin);
-    next();
-});
 
 app.all("/api/auth/*splat", toNodeHandler(auth));
 

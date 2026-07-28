@@ -41,6 +41,8 @@ app.use(express.json());
 
 app.use(securityMiddleware);
 app.use((req, res, next) => {
+    console.log(req.headers)
+
     console.log("origin", req.headers.origin);
 
     next();

@@ -1,5 +1,5 @@
 import express, {Router} from "express";
-import {classes, subjects, user} from "../db/schema/index.js";
+import {classes, departments, subjects, user} from "../db/schema/index.js";
 import {db} from "../db/index.js";
 import {and, desc, eq, getTableColumns, ilike, or, sql} from "drizzle-orm";
 import users from "./users.js";
@@ -94,5 +94,30 @@ router.get("/", async (req, res, next) => {
             message: `Internal Server Error`
         })
     }
+});
+
+//GET Class details
+router.get("/:id", async (req, res, next) => {
+    const classId = Number(req.params.id);
+
+    if (!Number.isFinite(classId)) return res.status(400).json({message: "classroom not found"});
+
+    const [classDetails] = await db
+        .select({
+            ...getTableColumns(classes),
+            subject: {...getTableColumns(subjects)},
+            teacher: {...getTableColumns(user)},
+        })
+        .from(classes)
+        .leftJoin(subjects, eq(classes.subjectId, subjects.id))
+        .leftJoin(user, eq(classes.teacherId, user.id))
+        .where(eq(classes.id, classId))
+
+    if (!classDetails) return res.status(404).json({message: "classroom not found"});
+
+    res.status(200).json({
+        data: classDetails
+    })
 })
+
 export default router;

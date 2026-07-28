@@ -39,20 +39,13 @@ app.use(cors(originOptions));
 
 app.use(express.json());
 
-app.use(securityMiddleware);
 app.use((req, res, next) => {
-    console.log(req.headers)
+    console.log(req.originalUrl);
 
     console.log("origin", req.headers.origin);
 
     next();
 })
-app.all("/api/auth/*splat", toNodeHandler(auth));
-
-//Routes
-app.use("/api/subjects", subjectsRouter);
-app.use("/api/classes", classesRouter);
-app.use("/api/users", usersRouter)
 
 app.get("/", (req, res): void => {
     res.json({

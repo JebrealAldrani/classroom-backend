@@ -11,6 +11,8 @@ import {auth} from "./lib/auth.js";
 import subjectsRouter from "./routes/subjects.js";
 import classesRouter from "./routes/classes.js";
 import usersRouter from "./routes/users.js";
+import departmentsRouter from "./routes/departments.js";
+import enrollmentsRouter from "./routes/enrollments.js";
 import securityMiddleware from "./middleware/securityMiddleware.js";
 
 const app = express();
@@ -46,7 +48,9 @@ app.all("/api/auth/*splat", toNodeHandler(auth));
 //Routes
 app.use("/api/subjects", subjectsRouter);
 app.use("/api/classes", classesRouter);
-app.use("/api/users", usersRouter)
+app.use("/api/users", usersRouter);
+app.use("/api/departments", departmentsRouter);
+app.use("/api/enrollments", enrollmentsRouter);
 
 app.get("/", (req, res): void => {
     res.json({

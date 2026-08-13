@@ -53,8 +53,23 @@ router.get("/", async (req, res) => {
       );
     }
 
+    const CLASS_STATUSES = ["active", "inactive", "archived"] as const;
+    type ClassStatus = (typeof CLASS_STATUSES)[number];
+
+    function isClassStatus(value: unknown): value is ClassStatus {
+      return (
+        typeof value === "string" &&
+        (CLASS_STATUSES as readonly string[]).includes(value)
+      );
+    }
+
+    // ...inside the route handler:
+
     if (status) {
-      filterConditions.push(eq(classes.status, String(status)));
+      if (!isClassStatus(status)) {
+        return res.status(400).json({ message: "Invalid status value" });
+      }
+      filterConditions.push(eq(classes.status, status));
     }
 
     const whereClause =

@@ -44,7 +44,7 @@ router.post("/", async (req, res) => {
       })
       .returning({
         ...getTableColumns(subjects),
-        department: { ...getTableColumns(departments) },
+        // department: { ...getTableColumns(departments) },
       });
 
     res.status(201).json({

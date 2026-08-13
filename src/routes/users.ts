@@ -21,9 +21,7 @@ router.post("/", async (req, res) => {
     const [createdUser] = await db
       .insert(user)
       .values(newUser)
-      .returning({
-        ...user,
-      });
+      .returning();
 
     res.status(201).json({
       message: "User created successfully",

@@ -109,13 +109,19 @@ router.get("/:id", async (req, res) => {
 router.put("/:id", async (req, res) => {
   try {
     const departmentId = Number(req.params.id);
-    if (!Number.isFinite(departmentId)) {
+    if (!Number.isInteger(departmentId) || departmentId < 1) {
       return res.status(400).json({ message: "Department not found" });
     }
 
+    const updateData = {
+      code: req.body.code,
+      name: req.body.name,
+      description: req.body.description,
+    };
+
     const [department] = await db
       .update(departments)
-      .set(req.body)
+      .set(updateData)
       .where(eq(departments.id, departmentId))
       .returning({
         id: departments.id,

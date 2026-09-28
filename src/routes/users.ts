@@ -38,7 +38,7 @@ router.post("/", async (req, res) => {
     console.error("POST User error", error);
     res
       .status(500)
-      .json({ message: error?.body?.message ?? "Internal Server Error" });
+      .json({ message: "Internal Server Error" });
   }
 });
 

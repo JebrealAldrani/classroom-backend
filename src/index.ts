@@ -34,22 +34,20 @@ if (!PORT || PORT < 1 || PORT > 65535) {
 const originOptions = {
   origin: process.env.FRONTEND_URL,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 };
 
-app.use(cors(originOptions));
-
 app.use(express.json());
+
+app.use(cors(originOptions));
 
 app.use(securityMiddleware);
 
 app.all("/api/auth/*splat", toNodeHandler(auth));
 
 //Routes
-app.use("/", (req: Request, res: Response, next: Function): void => {
-  console.log("Request received:", req.method, req.url);
-  next();
-});
+
 app.use("/api/subjects", subjectsRouter);
 app.use("/api/classes", classesRouter);
 app.use("/api/users", usersRouter);

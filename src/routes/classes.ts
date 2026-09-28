@@ -36,7 +36,14 @@ router.post("/", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const { search, page = 1, limit = 10, status } = req.query;
+    const {
+      search,
+      page = 1,
+      limit = 10,
+      status,
+      teacherId,
+      // subjectId,
+    } = req.query;
 
     const currentPage = Math.max(1, Number(page));
     const limitPerPage = Math.max(5, Number(limit));
@@ -52,6 +59,16 @@ router.get("/", async (req, res) => {
         ),
       );
     }
+
+    // Teacher filter
+    if (teacherId) {
+      filterConditions.push(eq(classes.teacherId, String(teacherId)));
+    }
+
+    // Subject filter
+    // if (subjectId) {
+    //   filterConditions.push(eq(classes.subjectId, Number(subjectId)));
+    // }
 
     const CLASS_STATUSES = ["active", "inactive", "archived"] as const;
     type ClassStatus = (typeof CLASS_STATUSES)[number];

@@ -15,6 +15,13 @@
       "when": 1784117266907,
       "tag": "0001_lowly_clint_barton",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788943322770,
+      "tag": "0002_breezy_praxagora",
+      "breakpoints": true
     }
   ]
 }

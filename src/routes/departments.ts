@@ -113,6 +113,23 @@ router.put("/:id", async (req, res) => {
       return res.status(400).json({ message: "Department not found" });
     }
 
+    // Load the current code so it can remain immutable during an edit.
+    const [existingDepartment] = await db
+      .select({ code: departments.code })
+      .from(departments)
+      .where(eq(departments.id, departmentId));
+
+    if (!existingDepartment) {
+      return res.status(404).json({ message: "Department not found" });
+    }
+
+    // Reject requests that try to change the department code.
+    if (req.body.code !== existingDepartment.code) {
+      return res.status(400).json({
+        message: "Department code cannot be changed.",
+      });
+    }
+
     const updateData = {
       code: req.body.code,
       name: req.body.name,

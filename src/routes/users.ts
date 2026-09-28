@@ -1,24 +1,34 @@
-import crypto from "node:crypto";
 import express, { Router } from "express";
 import { db } from "../db/index.js";
-import { user } from "../db/schema/index.js";
+import { account, departments, user } from "../db/schema/index.js";
 import { and, count, eq, ilike } from "drizzle-orm";
+import { hashPassword } from "better-auth/crypto";
+import { auth } from "../lib/auth.js";
 
 const router: Router = express.Router();
 
 router.post("/", async (req, res) => {
   try {
-    const newUser = {
-      id: crypto.randomUUID(),
-      email: req.body.email,
-      name: req.body.name,
-      role: req.body.role ?? "student",
-      image: req.body.image,
-      imageCldPubId: req.body.imageCldPubId,
-      emailVerified: req.body.emailVerified ?? false,
-    };
+    if (!req.body.password) {
+      return res.status(400).json({ message: "Password is required" });
+    }
 
-    const [createdUser] = await db.insert(user).values(newUser).returning();
+    const authResult = await auth.api.signUpEmail({
+      body: {
+        email: req.body.email,
+        password: req.body.password,
+        name: req.body.name,
+        role: req.body.role ?? "student",
+        image: req.body.image,
+        imageCldPubId: req.body.imageCldPubId,
+      },
+    });
+
+    const [createdUser] = await db
+      .update(user)
+      .set({ departmentId: req.body.departmentId ?? null })
+      .where(eq(user.id, authResult.user.id))
+      .returning();
 
     res.status(201).json({
       message: "User created successfully",
@@ -26,7 +36,9 @@ router.post("/", async (req, res) => {
     });
   } catch (error) {
     console.error("POST User error", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    res
+      .status(500)
+      .json({ message: error?.body?.message ?? "Internal Server Error" });
   }
 });
 
@@ -75,11 +87,18 @@ router.get("/", async (req, res) => {
         role: user.role,
         image: user.image,
         imageCldPubId: user.imageCldPubId,
+        departmentId: user.departmentId,
+        department: {
+          id: departments.id,
+          code: departments.code,
+          name: departments.name,
+        },
         emailVerified: user.emailVerified,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       })
       .from(user)
+      .leftJoin(departments, eq(user.departmentId, departments.id))
       .where(whereClause)
       .limit(pageSize)
       .offset(offset);
@@ -89,6 +108,7 @@ router.get("/", async (req, res) => {
         total: count(),
       })
       .from(user)
+      .leftJoin(departments, eq(user.departmentId, departments.id))
       .where(whereClause);
 
     const total = result[0]?.total ?? 0;
@@ -121,11 +141,18 @@ router.get("/:id", async (req, res) => {
         role: user.role,
         image: user.image,
         imageCldPubId: user.imageCldPubId,
+        departmentId: user.departmentId,
+        department: {
+          id: departments.id,
+          code: departments.code,
+          name: departments.name,
+        },
         emailVerified: user.emailVerified,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       })
       .from(user)
+      .leftJoin(departments, eq(user.departmentId, departments.id))
       .where(eq(user.id, id));
 
     if (!foundUser) {
@@ -152,6 +179,7 @@ router.put("/:id", async (req, res) => {
         image: req.body.image,
         imageCldPubId: req.body.imageCldPubId,
         emailVerified: req.body.emailVerified,
+        departmentId: req.body.departmentId ?? null,
       })
       .where(eq(user.id, id))
       .returning({
@@ -161,6 +189,7 @@ router.put("/:id", async (req, res) => {
         role: user.role,
         image: user.image,
         imageCldPubId: user.imageCldPubId,
+        departmentId: user.departmentId,
         emailVerified: user.emailVerified,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
@@ -168,6 +197,16 @@ router.put("/:id", async (req, res) => {
 
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
+    }
+
+    if (req.body.password) {
+      const password = await hashPassword(req.body.password);
+      await db
+        .update(account)
+        .set({ password })
+        .where(
+          and(eq(account.userId, id), eq(account.providerId, "credential")),
+        );
     }
 
     res.status(200).json({ data: updatedUser });

@@ -152,6 +152,23 @@ router.put("/:id", async (req, res) => {
       return res.status(400).json({ message: "Subject not found" });
     }
 
+    // Load the current code so it can be kept immutable during an edit.
+    const [existingSubject] = await db
+      .select({ code: subjects.code })
+      .from(subjects)
+      .where(eq(subjects.id, subjectId));
+
+    if (!existingSubject) {
+      return res.status(404).json({ message: "Subject not found" });
+    }
+
+    // Reject requests that try to change the subject's code.
+    if (req.body.code !== existingSubject.code) {
+      return res.status(400).json({
+        message: "Subject code cannot be changed.",
+      });
+    }
+
     const departmentId = await resolveDepartmentId(
       req.body.department,
       req.body.departmentId,
@@ -171,16 +188,22 @@ router.put("/:id", async (req, res) => {
       .update(subjects)
       .set(updateData)
       .where(eq(subjects.id, subjectId))
-      .returning({
-        ...getTableColumns(subjects),
-        department: { ...getTableColumns(departments) },
-      });
+      .returning(getTableColumns(subjects));
 
     if (!updatedSubject) {
       return res.status(404).json({ message: "Subject not found" });
     }
 
-    res.status(200).json({ data: updatedSubject });
+    const [subjectWithDepartment] = await db
+      .select({
+        ...getTableColumns(subjects),
+        department: { ...getTableColumns(departments) },
+      })
+      .from(subjects)
+      .leftJoin(departments, eq(subjects.department_id, departments.id))
+      .where(eq(subjects.id, updatedSubject.id));
+
+    res.status(200).json({ data: subjectWithDepartment });
   } catch (err) {
     console.error("PUT Subject error", err);
     res.status(500).json({ message: "Internal Server Error" });
